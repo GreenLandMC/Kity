@@ -1,0 +1,16 @@
+kits:
+  classic:
+    price: 3500
+    items:
+
+  gangster:
+    price: 7000
+    items:
+
+  mythic:
+    price: 12500
+    items:
+
+  christmas:
+    price: 0
+    items:
