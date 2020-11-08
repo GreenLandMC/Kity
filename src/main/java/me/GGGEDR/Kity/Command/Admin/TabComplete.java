@@ -22,6 +22,8 @@ public class TabComplete implements TabCompleter {
             tab_comple.add("Mythic");
             tab_comple.add("Classic");
             tab_comple.add("Gangster");
+            tab_comple.add("Shulker");
+            tab_comple.add("Builder");
         }
         if(args.length == 3){
             for(Player p: Bukkit.getOnlinePlayers()){

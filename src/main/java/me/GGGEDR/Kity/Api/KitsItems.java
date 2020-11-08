@@ -50,4 +50,24 @@ public class KitsItems {
         return head.getHead();
     }
 
+    public ItemStack getShulkerHead(){
+        Head head = new Head(ChatColor.of(Color.decode("#ff8f9e")) +"§lShulker Kit","eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzU5NjUxYTg4OWVhYTRhNmU5ODlhOTRiNTMxNGJlNjgxYWQ3ZGQyNzRjM2MyZWRhNWJkNzZmYTAyYjY0NWJjMyJ9fX0=", "JyPTvsLY");
+        ArrayList lore = new ArrayList<String>();
+        lore.add(ChatColor.of(Color.decode("#ff8f9e")) +"» §fClick to open");
+        lore.add(ChatColor.of(Color.decode("#ff8f9e")) +"» "+ ChatColor.of(Color.decode("#ffc2ca")) +"Description:");
+        lore.add("§fMenšia dávka Shulker Boxov");
+        head.setLore(lore);
+        return head.getHead();
+    }
+
+    public ItemStack getBuilderHead(){
+        Head head = new Head(ChatColor.of(Color.decode("#879dff")) +"§lBuilder Kit","eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWIxOGNmOWUxYmY3ZWM1NzMwNGFlOTJmMmIwMGQ5MTY0M2NmMGI2NTA2N2RlYWQzNGZiNDhiYWYxOGUzYzM4NSJ9fX0=", "sr6WSoLF");
+        ArrayList lore = new ArrayList<String>();
+        lore.add(ChatColor.of(Color.decode("#879dff")) +"» §fClick to open");
+        lore.add(ChatColor.of(Color.decode("#879dff")) +"» "+ ChatColor.of(Color.decode("#b8c5ff")) +"Description:");
+        lore.add("§fNiečo pre skúsených builderov");
+        head.setLore(lore);
+        return head.getHead();
+    }
+
 }

@@ -57,7 +57,12 @@ public class Configurator {
                 if (this.kit.equalsIgnoreCase("classic")) {
                     p.getInventory().removeItem(kits.getClassicHead());
                 }
-                System.out.println(treba_slotov);
+                if (this.kit.equalsIgnoreCase("shulker")) {
+                    p.getInventory().removeItem(kits.getShulkerHead());
+                }
+                if (this.kit.equalsIgnoreCase("builder")) {
+                    p.getInventory().removeItem(kits.getBuilderHead());
+                }
                 for (int i = 0; i < treba_slotov; i++) {
                     int hmm = i + 1;
                     ItemStack item = yamlConfiguration.getItemStack("kits." + kit + ".items." + hmm);

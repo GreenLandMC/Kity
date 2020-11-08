@@ -46,9 +46,15 @@ public class Admin implements CommandExecutor {
                     } else if(argumnty[1].equalsIgnoreCase("Gangster")){
                         ((Player) sender).getInventory().addItem(kity.getGangsterHead());
                         sender.sendMessage("§a§lKit §8» §7Dostal si: "+ ChatColor.of(Color.decode("#411fcc")) +"§lGangster Kit");
+                    } else if(argumnty[1].equalsIgnoreCase("Shulker")){
+                        ((Player) sender).getInventory().addItem(kity.getShulkerHead());
+                        sender.sendMessage("§a§lKit §8» §7Dostal si: "+ ChatColor.of(Color.decode("#ff8f9e")) +"§lShulker Kit");
+                    } else if(argumnty[1].equalsIgnoreCase("Builder")){
+                        ((Player) sender).getInventory().addItem(kity.getBuilderHead());
+                        sender.sendMessage("§a§lKit §8» §7Dostal si: "+ ChatColor.of(Color.decode("#879dff")) +"§lBuilder Kit");
                     } else {
                         sender.sendMessage("§a§lAKit §8» §7Use: §a/akit give <kit> [player]");
-                        sender.sendMessage("§a* §7Kits: "+ ChatColor.of(Color.decode("#e3051b")) +"Christmas§7,"+ ChatColor.of(Color.decode("#bb00ff")) +" Mythic§7, "+ ChatColor.of(Color.decode("#cc5a18")) +"Classic§7, "+ ChatColor.of(Color.decode("#411fcc")) +"Gangster");
+                        sender.sendMessage("§a* §7Kits: "+ ChatColor.of(Color.decode("#e3051b")) +"Christmas§7,"+ ChatColor.of(Color.decode("#bb00ff")) +" Mythic§7, "+ ChatColor.of(Color.decode("#cc5a18")) +"Classic§7, "+ ChatColor.of(Color.decode("#411fcc")) +"Gangster§7, "+ ChatColor.of(Color.decode("#ff8f9e")) +"Shulker§7, "+ ChatColor.of(Color.decode("#879dff")) +"Builder");
                     }
                 } else if(argumnty[0].equalsIgnoreCase("set")){
                     if(argumnty[1].equalsIgnoreCase("Christmas")){
@@ -83,9 +89,25 @@ public class Admin implements CommandExecutor {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                    } else if(argumnty[1].equalsIgnoreCase("Shulker")){
+                        Configurator configurator = new Configurator("shulker");
+                        try {
+                            configurator.setItems((Player) sender);
+                            sender.sendMessage("§a§lKit §8» §7Upravil si kit: "+ ChatColor.of(Color.decode("#ff8f9e")) +"§lShulker Kit");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else if(argumnty[1].equalsIgnoreCase("Builder")){
+                        Configurator configurator = new Configurator("builder");
+                        try {
+                            configurator.setItems((Player) sender);
+                            sender.sendMessage("§a§lKit §8» §7Upravil si kit: "+ ChatColor.of(Color.decode("#879dff")) +"§lBuilder Kit");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     } else {
                         sender.sendMessage("§a§lAKit §8» §7Use: §a/akit give <kit> [player]");
-                        sender.sendMessage("§a* §7Kits: "+ ChatColor.of(Color.decode("#e3051b")) +"Christmas§7,"+ ChatColor.of(Color.decode("#bb00ff")) +" Mythic§7, "+ ChatColor.of(Color.decode("#cc5a18")) +"Classic§7, "+ ChatColor.of(Color.decode("#411fcc")) +"Gangster");
+                        sender.sendMessage("§a* §7Kits: "+ ChatColor.of(Color.decode("#e3051b")) +"Christmas§7,"+ ChatColor.of(Color.decode("#bb00ff")) +" Mythic§7, "+ ChatColor.of(Color.decode("#cc5a18")) +"Classic§7, "+ ChatColor.of(Color.decode("#411fcc")) +"Gangster§7, "+ ChatColor.of(Color.decode("#ff8f9e")) +"Shulker§7, "+ ChatColor.of(Color.decode("#879dff")) +"Builder");
                     }
                 } else {
                     sender.sendMessage("§8» » » »  §a§lKits - Help  §8« « « «");
@@ -128,9 +150,25 @@ public class Admin implements CommandExecutor {
                         } else {
                             sender.sendMessage("§a§lKit §8» §7This user is offline!");
                         }
-                    } else {
+                    } else if(argumnty[1].equalsIgnoreCase("Shulker")){
+                        if(Bukkit.getPlayer(argumnty[2]) != null) {
+                            Bukkit.getPlayer(argumnty[2]).getInventory().addItem(kity.getShulkerHead());
+                            sender.sendMessage("§a§lKit §8» §7Dal si: "+ ChatColor.of(Color.decode("#ff8f9e")) +"§lShulker Kit §7Hráčovi: §a"+ argumnty[2]);
+                            Bukkit.getPlayer(argumnty[2]).sendMessage("§a§lKit §8» §7Dostal si: "+ ChatColor.of(Color.decode("#ff8f9e")) +"§lShulker Kit");
+                        } else {
+                            sender.sendMessage("§a§lKit §8» §7This user is offline!");
+                        }
+                    } else if(argumnty[1].equalsIgnoreCase("Builder")){
+                        if(Bukkit.getPlayer(argumnty[2]) != null) {
+                            Bukkit.getPlayer(argumnty[2]).getInventory().addItem(kity.getBuilderHead());
+                            sender.sendMessage("§a§lKit §8» §7Dal si: "+ ChatColor.of(Color.decode("#879dff")) +"§lBuilder Kit §7Hráčovi: §a"+ argumnty[2]);
+                            Bukkit.getPlayer(argumnty[2]).sendMessage("§a§lKit §8» §7Dostal si: "+ ChatColor.of(Color.decode("#879dff")) +"§lBuilder Kit");
+                        } else {
+                            sender.sendMessage("§a§lKit §8» §7This user is offline!");
+                        }
+                    }else {
                         sender.sendMessage("§a§lAKit §8» §7Use: §a/akit give <kit> [player]");
-                        sender.sendMessage("§a* §7Kits: "+ ChatColor.of(Color.decode("#e3051b")) +"Christmas§7,"+ ChatColor.of(Color.decode("#bb00ff")) +" Mythic§7, "+ ChatColor.of(Color.decode("#cc5a18")) +"Classic§7, "+ ChatColor.of(Color.decode("#411fcc")) +"Gangster");
+                        sender.sendMessage("§a* §7Kits: "+ ChatColor.of(Color.decode("#e3051b")) +"Christmas§7,"+ ChatColor.of(Color.decode("#bb00ff")) +" Mythic§7, "+ ChatColor.of(Color.decode("#cc5a18")) +"Classic§7, "+ ChatColor.of(Color.decode("#411fcc")) +"Gangster§7, "+ ChatColor.of(Color.decode("#ff8f9e")) +"Shulker§7, "+ ChatColor.of(Color.decode("#879dff")) +"Builder");
                     }
                 } else {
                     sender.sendMessage("§8» » » »  §a§lKits - Help  §8« « « «");

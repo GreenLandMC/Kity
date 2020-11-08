@@ -44,6 +44,16 @@ public class Click implements Listener {
                                 Configurator configurator = new Configurator("gangster");
                                 configurator.activeKit(e.getPlayer());
                             }
+
+                            if (((SkullMeta) e.getItem().getItemMeta()).getOwner().equalsIgnoreCase("JyPTvsLY")) {
+                                Configurator configurator = new Configurator("shulker");
+                                configurator.activeKit(e.getPlayer());
+                            }
+
+                            if (((SkullMeta) e.getItem().getItemMeta()).getOwner().equalsIgnoreCase("sr6WSoLF")) {
+                                Configurator configurator = new Configurator("builder");
+                                configurator.activeKit(e.getPlayer());
+                            }
                         }
                     }
                 }
@@ -54,7 +64,7 @@ public class Click implements Listener {
     @EventHandler
     public void onPlace(BlockPlaceEvent e){
         if(e.getBlock().getType() == Material.PLAYER_HEAD) {
-        e.setCancelled(true);
+            e.setCancelled(true);
         }
     }
 
