@@ -1,16 +1,48 @@
+messages:
+  akit:
+    use:
+      kit:
+        no-slots: "[prefixes.default]You don't have enough slots! &a(needed: [kit.slots.number])"
+        item-pattern: "&a&l+ &7| &a[item] &b[amount]x"
+        kit-used: "[prefixes.default]You activated you kit"
+    prefixes:
+      admin: "&a&lAKit &8» &7"
+      default: "&a&lKit &8» &7"
+    help:
+      - "&8» » » »  &a&lKits - Help  &8« « « «"
+      - "&a/akit give <kit> [player] &8- &7Give kit to player"
+      - "&a/akit set <kit> &8- &7Set items in kit"
+      - "&8» » » »  &a&lKits - Help  &8« « « «"
+    give:
+      use:
+        - "[prefixes.admin]Use: &a/akit give <kit> [player]"
+        - "&a× &7Kits: &a[list.kits]"
+      receive:
+        - "[prefixes.default]You received a: &r[kit.Name]"
+      receive-other:
+        - "[prefixes.admin]You give kit: &r[kit.name] &7to: &a[player.name]"
+    set:
+      done:
+        - "[prefixes.admin]You set items in kit: &a[kit.Name]"
+      use:
+        - "[prefixes.admin]Use: &a/akit set <kit>"
+        - "&a× &7Kits: &a[list.kits]"
+    errors:
+      no-permission: "&cYou are not allowed"
+      offline: "[prefixes.admin]This player is offline!"
+      no-kits: "[prefixes.admin]There is not a kit in the config"
+      no-slot: "[prefixes.admin]No empty slot!"
+    subbers:
+      kit-list: "&7, &a"
+
 kits:
-  classic:
-    price: 3500
-    items:
-
-  gangster:
-    price: 7000
-    items:
-
-  mythic:
-    price: 12500
-    items:
-
   christmas:
-    price: 0
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA4MDAzYWUxZGVjNjQxN2IxNDA3MDQ2MjdhMDA3MTk2ZTUxNmFlZWM5YjM5NGFmNzhkNzAxOTJjOGUzNTE1ZCJ9fX0="
+    code: "aiDe3INQ" #Random code for controlling head
+    name: "<#e3051b>&lChristmas Kit"
+    lore:
+      - "<#e3051b>» &fClick to open"
+      - "<#e3051b>» &f<##f76f7d>Description:"
+      - "&fChristmas present"
+      - "&fFrom serverName team"
     items:

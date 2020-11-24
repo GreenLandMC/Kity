@@ -1,8 +1,11 @@
 package me.GGGEDR.Kity.Api;
 
 import me.GGGEDR.Kity.Main;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -10,6 +13,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Configurator {
 
@@ -45,33 +51,21 @@ public class Configurator {
             int treba_slotov = configurationSection.getKeys(false).size();
             if (getEmptySlots(p.getInventory()) >= treba_slotov) {
                 KitsItems kits = new KitsItems();
-                if (this.kit.equalsIgnoreCase("christmas")) {
-                    p.getInventory().removeItem(kits.getChristmasHead());
-                }
-                if (this.kit.equalsIgnoreCase("gangster")) {
-                    p.getInventory().removeItem(kits.getGangsterHead());
-                }
-                if (this.kit.equalsIgnoreCase("mythic")) {
-                    p.getInventory().removeItem(kits.getMythicHead());
-                }
-                if (this.kit.equalsIgnoreCase("classic")) {
-                    p.getInventory().removeItem(kits.getClassicHead());
-                }
-                if (this.kit.equalsIgnoreCase("shulker")) {
-                    p.getInventory().removeItem(kits.getShulkerHead());
-                }
-                if (this.kit.equalsIgnoreCase("builder")) {
-                    p.getInventory().removeItem(kits.getBuilderHead());
-                }
+                p.getInventory().removeItem(kits.getKitHead(this.kit));
                 for (int i = 0; i < treba_slotov; i++) {
                     int hmm = i + 1;
                     ItemStack item = yamlConfiguration.getItemStack("kits." + kit + ".items." + hmm);
                     p.getInventory().addItem(item);
-                    p.sendMessage("§a§l+ §7| §a" + item.getType().name().toLowerCase().replace("_", " ") +" §b"+ item.getAmount() +"x");
+                    HashMap<String, String> replacements = new HashMap<>();
+                    replacements.put("item", item.getType().name().toLowerCase().replace("_", " "));
+                    replacements.put("amount", ""+item.getAmount());
+                    sendMessage(p, "messages.akit.use.kit.item-pattern", replacements);
                 }
-                p.sendMessage("§a§lKit §8» §7Aktivoval si si svoj kit!");
+                sendMessage(p, "messages.akit.use.kit.kit-used");
             } else {
-                p.sendMessage("§a§lKit §8» §7Nemáš dostatočný počet volných slotov v inventáry! §fTreba: §a" + treba_slotov +" §7| §fMáš: §a"+ getEmptySlots(p.getInventory()));
+                HashMap<String, String> reaplaments = new HashMap<>();
+                reaplaments.put("kit.slots.number", ""+ treba_slotov);
+                sendList(p, "messages.akit.use.kit.no-slots", reaplaments);
             }
         }
     }
@@ -84,5 +78,61 @@ public class Configurator {
             }
         }
         return i;
+    }
+
+    public void sendList(CommandSender sender, String location, HashMap<String, String> replacements){
+        FileConfiguration config = Main.getInstance().getConfig();
+        replacements.put("prefixes.admin", config.getString("messages.akit.prefixes.admin"));
+        replacements.put("prefixes.default", config.getString("messages.akit.prefixes.default"));
+        for(String str : Main.getInstance().getConfig().getStringList(location)){
+            sendWithReplacement(sender, str, replacements);
+        }
+    }
+
+    public void sendList(CommandSender sender, String location){
+        HashMap<String, String> replacements = new HashMap<>();
+        FileConfiguration config = Main.getInstance().getConfig();
+        replacements.put("prefixes.admin", config.getString("messages.akit.prefixes.admin"));
+        replacements.put("prefixes.default", config.getString("messages.akit.prefixes.default"));
+        for(String str : Main.getInstance().getConfig().getStringList(location)){
+            sendWithReplacement(sender, str, replacements);
+        }
+    }
+
+    public void sendMessage(CommandSender sender, String location){
+        HashMap<String, String> replacements = new HashMap<>();
+        FileConfiguration config = Main.getInstance().getConfig();
+        replacements.put("prefixes.admin", config.getString("messages.akit.prefixes.admin"));
+        replacements.put("prefixes.default", config.getString("messages.akit.prefixes.default"));
+        sendWithReplacement(sender, Main.getInstance().getConfig().getString(location), replacements);
+    }
+
+    public void sendMessage(CommandSender sender, String location, HashMap<String, String> replacements){
+        FileConfiguration config = Main.getInstance().getConfig();
+        replacements.put("prefixes.admin", config.getString("messages.akit.prefixes.admin"));
+        replacements.put("prefixes.default", config.getString("messages.akit.prefixes.default"));
+        sendWithReplacement(sender, Main.getInstance().getConfig().getString(location), replacements);
+    }
+
+    public void sendWithReplacement(CommandSender sender, String msg, HashMap<String, String> replacements){
+        String ehm = msg;
+        for(String replacement : replacements.keySet()){
+            ehm = ehm.replace("["+ replacement +"]", replacements.get(replacement));
+        }
+        ehm = applyColor(ehm);
+        sender.sendMessage(ehm);
+    }
+
+    private final Pattern hexPattern = Pattern.compile("<#([A-Fa-f0-9]){6}>");
+    public String applyColor(String message){
+        Matcher matcher = hexPattern.matcher(message);
+        while (matcher.find()) {
+            final ChatColor hexColor = ChatColor.of(matcher.group().substring(1, matcher.group().length() - 1));
+            final String before = message.substring(0, matcher.start());
+            final String after = message.substring(matcher.end());
+            message = before + hexColor + after;
+            matcher = hexPattern.matcher(message);
+        }
+        return ChatColor.translateAlternateColorCodes('&', message);
     }
 }

@@ -1,11 +1,15 @@
 package me.GGGEDR.Kity.Command.Admin;
 
+import me.GGGEDR.Kity.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,12 +22,14 @@ public class TabComplete implements TabCompleter {
             tab_comple.add("set");
         }
         if(args.length == 2){
-            tab_comple.add("Christmas");
-            tab_comple.add("Mythic");
-            tab_comple.add("Classic");
-            tab_comple.add("Gangster");
-            tab_comple.add("Shulker");
-            tab_comple.add("Builder");
+            File config = new File(Main.getInstance().getDataFolder() + "/config.yml");
+            YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(config);
+            ConfigurationSection configurationSection = yamlConfiguration.getConfigurationSection("kits");
+            if(configurationSection != null) {
+                for(String kit : configurationSection.getKeys(false)){
+                    tab_comple.add(kit);
+                }
+            }
         }
         if(args.length == 3){
             for(Player p: Bukkit.getOnlinePlayers()){

@@ -1,73 +1,39 @@
 package me.GGGEDR.Kity.Api;
 
+import me.GGGEDR.Kity.Main;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class KitsItems {
 
-    public ItemStack getChristmasHead(){
-        Head head = new Head(ChatColor.of(Color.decode("#e3051b")) +"§lChristmas Kit", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA4MDAzYWUxZGVjNjQxN2IxNDA3MDQ2MjdhMDA3MTk2ZTUxNmFlZWM5YjM5NGFmNzhkNzAxOTJjOGUzNTE1ZCJ9fX0=", "aiDe3INQ");
+    public ItemStack getKitHead(String name){
+        FileConfiguration config = Main.getInstance().getConfig();
+        Head head = new Head(applyColor(config.getString("kits."+ name +".name")), config.getString("kits."+ name +".texture"), config.getString("kits."+ name +".code"));
         ArrayList lore = new ArrayList<String>();
-        lore.add(ChatColor.of(Color.decode("#e3051b")) +"» §fClick to open");
-        lore.add(ChatColor.of(Color.decode("#e3051b")) +"» "+ ChatColor.of(Color.decode("#f76f7d")) +"Description:");
-        lore.add("§fVánoční dárek");
-        lore.add("§fOd GreenLandMC Teamu");
+        for(String loren : Main.getInstance().getConfig().getStringList("kits."+ name +".lore")){
+            lore.add(applyColor(loren));
+        }
         head.setLore(lore);
         return head.getHead();
     }
 
-    public ItemStack getMythicHead(){
-        Head head = new Head(ChatColor.of(Color.decode("#bb00ff")) +"§lMythic Kit","eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzljN2YxZGIxY2UyMWFkMGQyYzVkMTEyNDY2ZWVhNzk4NGRhM2EwMTMzMzBlMTBhYzljMWU3OWQxNjAyNWU5MiJ9fX0=", "tzehQYlx");
-        ArrayList lore = new ArrayList<String>();
-        lore.add(ChatColor.of(Color.decode("#bb00ff")) +"» §fClick to open");
-        lore.add(ChatColor.of(Color.decode("#bb00ff")) +"» "+ ChatColor.of(Color.decode("#ca56f5")) +"Description:");
-        lore.add("§fHmm tieto itemy smrdí mágiov");
-        lore.add("§fDávej si pozor člověče!");
-        head.setLore(lore);
-        return head.getHead();
-    }
-
-    public ItemStack getClassicHead(){
-        Head head = new Head(ChatColor.of(Color.decode("#cc5a18")) +"§lClassic Kit","eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODc1ZTc5NDg4ODQ3YmEwMmQ1ZTEyZTcwNDJkNzYyZTg3Y2UwOGZhODRmYjg5YzM1ZDZiNWNjY2I4YjlmNGJlZCJ9fX0=", "q5ImKCLN");
-        ArrayList lore = new ArrayList<String>();
-        lore.add(ChatColor.of(Color.decode("#cc5a18")) +"» §fClick to open");
-        lore.add(ChatColor.of(Color.decode("#cc5a18")) +"» "+ ChatColor.of(Color.decode("#c96e38")) +"Description:");
-        lore.add("§fTaký survival základ");
-        head.setLore(lore);
-        return head.getHead();
-    }
-
-    public ItemStack getGangsterHead(){
-        Head head = new Head(ChatColor.of(Color.decode("#411fcc")) +"§lGangster Kit","eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzJlNjA4MWM4MjVlODM5NzdhNjE0ODI4YjE5ZmFiNThjMWY2ZTYzMzcwY2IxMDk1ZGE1MzU5ODQwZDhjZTExNiJ9fX0=", "3GpdlqHL");
-        ArrayList lore = new ArrayList<String>();
-        lore.add(ChatColor.of(Color.decode("#411fcc")) +"» §fClick to open");
-        lore.add(ChatColor.of(Color.decode("#411fcc")) +"» "+ ChatColor.of(Color.decode("#6348cf")) +"Description:");
-        lore.add("§fPravý Gangsterský Balíček");
-        head.setLore(lore);
-        return head.getHead();
-    }
-
-    public ItemStack getShulkerHead(){
-        Head head = new Head(ChatColor.of(Color.decode("#ff8f9e")) +"§lShulker Kit","eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzU5NjUxYTg4OWVhYTRhNmU5ODlhOTRiNTMxNGJlNjgxYWQ3ZGQyNzRjM2MyZWRhNWJkNzZmYTAyYjY0NWJjMyJ9fX0=", "JyPTvsLY");
-        ArrayList lore = new ArrayList<String>();
-        lore.add(ChatColor.of(Color.decode("#ff8f9e")) +"» §fClick to open");
-        lore.add(ChatColor.of(Color.decode("#ff8f9e")) +"» "+ ChatColor.of(Color.decode("#ffc2ca")) +"Description:");
-        lore.add("§fMenšia dávka Shulker Boxov");
-        head.setLore(lore);
-        return head.getHead();
-    }
-
-    public ItemStack getBuilderHead(){
-        Head head = new Head(ChatColor.of(Color.decode("#879dff")) +"§lBuilder Kit","eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWIxOGNmOWUxYmY3ZWM1NzMwNGFlOTJmMmIwMGQ5MTY0M2NmMGI2NTA2N2RlYWQzNGZiNDhiYWYxOGUzYzM4NSJ9fX0=", "sr6WSoLF");
-        ArrayList lore = new ArrayList<String>();
-        lore.add(ChatColor.of(Color.decode("#879dff")) +"» §fClick to open");
-        lore.add(ChatColor.of(Color.decode("#879dff")) +"» "+ ChatColor.of(Color.decode("#b8c5ff")) +"Description:");
-        lore.add("§fNiečo pre skúsených builderov");
-        head.setLore(lore);
-        return head.getHead();
+    private final Pattern hexPattern = Pattern.compile("<#([A-Fa-f0-9]){6}>");
+    public String applyColor(String message){
+        Matcher matcher = hexPattern.matcher(message);
+        while (matcher.find()) {
+            final ChatColor hexColor = ChatColor.of(matcher.group().substring(1, matcher.group().length() - 1));
+            final String before = message.substring(0, matcher.start());
+            final String after = message.substring(matcher.end());
+            message = before + hexColor + after;
+            matcher = hexPattern.matcher(message);
+        }
+        return ChatColor.translateAlternateColorCodes('&', message);
     }
 
 }

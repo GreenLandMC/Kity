@@ -2,189 +2,218 @@ package me.GGGEDR.Kity.Command.Admin;
 
 import me.GGGEDR.Kity.Api.Configurator;
 import me.GGGEDR.Kity.Api.KitsItems;
+import me.GGGEDR.Kity.Main;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Admin implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] argumnty) {
         if(sender.hasPermission("kit.admin.*")){
-            if(argumnty.length == 0){
-                sender.sendMessage("§8» » » »  §a§lKits - Help  §8« « « «");
-                sender.sendMessage("§a/akit give <kit> [player] §8- §7Give kit to player");
-                sender.sendMessage("§a/akit set <kit> §8- §7Set items in kit");
-                sender.sendMessage("§8» » » »  §a§lKits - Help  §8« « « «");
+            if(argumnty.length == 0) {
+                sendList(sender, "messages.akit.help");
             } else if(argumnty.length == 1) {
                 if (argumnty[0].equalsIgnoreCase("give")) {
-                    sender.sendMessage("§a§lAKit §8» §7Use: §a/akit give <kit> [player]");
-                    sender.sendMessage("§a* §7Kits: "+ ChatColor.of(Color.decode("#e3051b")) +"Christmas§7,"+ ChatColor.of(Color.decode("#bb00ff")) +" Mythic§7, "+ ChatColor.of(Color.decode("#cc5a18")) +"Classic§7, "+ ChatColor.of(Color.decode("#411fcc")) +"Gangster");
+                    File config = new File(Main.getInstance().getDataFolder() + "/config.yml");
+                    YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(config);
+                    ConfigurationSection configurationSection = yamlConfiguration.getConfigurationSection("kits");
+                    HashMap<String, String> replacements = new HashMap<>();
+                    String kits = null;
+                    for(String kit : configurationSection.getKeys(false)){
+                        if(kits == null){
+                            kits = kit;
+                        } else {
+                            kits = kits + yamlConfiguration.getString("messages.akit.subbers.kit-list.") + kit;
+                        }
+                    }
+                    replacements.put("list.kits", applyColor(kits));
+                    sendList(sender, "messages.akit.give.use", replacements);
                 } else {
-                    sender.sendMessage("§8» » » »  §a§lKits - Help  §8« « « «");
-                    sender.sendMessage("§a/akit give <kit> [player] §8- §7Give kit to player");
-                    sender.sendMessage("§a/akit set <kit> §8- §7Set items in kit");
-                    sender.sendMessage("§8» » » »  §a§lKits - Help  §8« « « «");
+                    sendList(sender, "messages.akit.help");
                 }
             } else if(argumnty.length == 2){
                 if (argumnty[0].equalsIgnoreCase("give")) {
                     KitsItems kity = new KitsItems();
-                    if(argumnty[1].equalsIgnoreCase("Christmas")){
-                        ((Player) sender).getInventory().addItem(kity.getChristmasHead());
-                        sender.sendMessage("§a§lKit §8» §7Dostal si: "+ ChatColor.of(Color.decode("#e3051b")) +"§lChristmas Kit");
-                    } else if(argumnty[1].equalsIgnoreCase("Mythic")){
-                        ((Player) sender).getInventory().addItem(kity.getMythicHead());
-                        sender.sendMessage("§a§lKit §8» §7Dostal si: "+ ChatColor.of(Color.decode("#bb00ff")) +"§lMythic Kit");
-                    } else if(argumnty[1].equalsIgnoreCase("Classic")){
-                        ((Player) sender).getInventory().addItem(kity.getClassicHead());
-                        sender.sendMessage("§a§lKit §8» §7Dostal si: "+ ChatColor.of(Color.decode("#cc5a18")) +"§lClassic Kit");
-                    } else if(argumnty[1].equalsIgnoreCase("Gangster")){
-                        ((Player) sender).getInventory().addItem(kity.getGangsterHead());
-                        sender.sendMessage("§a§lKit §8» §7Dostal si: "+ ChatColor.of(Color.decode("#411fcc")) +"§lGangster Kit");
-                    } else if(argumnty[1].equalsIgnoreCase("Shulker")){
-                        ((Player) sender).getInventory().addItem(kity.getShulkerHead());
-                        sender.sendMessage("§a§lKit §8» §7Dostal si: "+ ChatColor.of(Color.decode("#ff8f9e")) +"§lShulker Kit");
-                    } else if(argumnty[1].equalsIgnoreCase("Builder")){
-                        ((Player) sender).getInventory().addItem(kity.getBuilderHead());
-                        sender.sendMessage("§a§lKit §8» §7Dostal si: "+ ChatColor.of(Color.decode("#879dff")) +"§lBuilder Kit");
+                    File config = new File(Main.getInstance().getDataFolder() + "/config.yml");
+                    YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(config);
+                    ConfigurationSection configurationSection = yamlConfiguration.getConfigurationSection("kits");
+                    if(configurationSection != null) {
+                        if (configurationSection.getKeys(false).contains(argumnty[1])) {
+                            ((Player) sender).getInventory().addItem(kity.getKitHead(argumnty[1]));
+                            HashMap<String, String> replacements = new HashMap<>();
+                            replacements.put("kit.Name", applyColor(yamlConfiguration.getString("kits."+ argumnty[1] +".name")));
+                            sendList(sender, "messages.akit.give.receive", replacements);
+                        } else {
+                            HashMap<String, String> replacements = new HashMap<>();
+                            String kits = null;
+                            for(String kit : configurationSection.getKeys(false)){
+                                if(kits == null){
+                                    kits = kit;
+                                } else {
+                                    kits = kits + yamlConfiguration.getString("messages.akit.subbers.kit-list.") + kit;
+                                }
+                            }
+                            replacements.put("list.kits", applyColor(kits));
+                            sendList(sender, "messages.akit.give.use", replacements);
+                        }
                     } else {
-                        sender.sendMessage("§a§lAKit §8» §7Use: §a/akit give <kit> [player]");
-                        sender.sendMessage("§a* §7Kits: "+ ChatColor.of(Color.decode("#e3051b")) +"Christmas§7,"+ ChatColor.of(Color.decode("#bb00ff")) +" Mythic§7, "+ ChatColor.of(Color.decode("#cc5a18")) +"Classic§7, "+ ChatColor.of(Color.decode("#411fcc")) +"Gangster§7, "+ ChatColor.of(Color.decode("#ff8f9e")) +"Shulker§7, "+ ChatColor.of(Color.decode("#879dff")) +"Builder");
+                        sendMessage(sender, "messages.akit.errors.no-kits");
                     }
                 } else if(argumnty[0].equalsIgnoreCase("set")){
-                    if(argumnty[1].equalsIgnoreCase("Christmas")){
-                        Configurator configurator = new Configurator("christmas");
-                        try {
-                            configurator.setItems((Player) sender);
-                            sender.sendMessage("§a§lKit §8» §7Upravil si kit: "+ ChatColor.of(Color.decode("#e3051b")) +"§lChristmas Kit");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else if(argumnty[1].equalsIgnoreCase("Mythic")){
-                        Configurator configurator = new Configurator("mythic");
-                        try {
-                            configurator.setItems((Player) sender);
-                            sender.sendMessage("§a§lKit §8» §7Upravil si kit: "+ ChatColor.of(Color.decode("#bb00ff")) +"§lMythic Kit");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else if(argumnty[1].equalsIgnoreCase("Classic")){
-                        Configurator configurator = new Configurator("classic");
-                        try {
-                            configurator.setItems((Player) sender);
-                            sender.sendMessage("§a§lKit §8» §7Upravil si kit: "+ ChatColor.of(Color.decode("#cc5a18")) +"§lClassic Kit");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else if(argumnty[1].equalsIgnoreCase("Gangster")){
-                        Configurator configurator = new Configurator("gangster");
-                        try {
-                            configurator.setItems((Player) sender);
-                            sender.sendMessage("§a§lKit §8» §7Upravil si kit: "+ ChatColor.of(Color.decode("#411fcc")) +"§lGangster Kit");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else if(argumnty[1].equalsIgnoreCase("Shulker")){
-                        Configurator configurator = new Configurator("shulker");
-                        try {
-                            configurator.setItems((Player) sender);
-                            sender.sendMessage("§a§lKit §8» §7Upravil si kit: "+ ChatColor.of(Color.decode("#ff8f9e")) +"§lShulker Kit");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else if(argumnty[1].equalsIgnoreCase("Builder")){
-                        Configurator configurator = new Configurator("builder");
-                        try {
-                            configurator.setItems((Player) sender);
-                            sender.sendMessage("§a§lKit §8» §7Upravil si kit: "+ ChatColor.of(Color.decode("#879dff")) +"§lBuilder Kit");
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                    File config = new File(Main.getInstance().getDataFolder() + "/config.yml");
+                    YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(config);
+                    ConfigurationSection configurationSection = yamlConfiguration.getConfigurationSection("kits");
+                    if(configurationSection != null) {
+                        if (configurationSection.getKeys(false).contains(argumnty[1])) {
+                            Configurator configurator = new Configurator(argumnty[1]);
+                            try {
+                                configurator.setItems((Player) sender);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            HashMap<String, String> replacements = new HashMap<>();
+                            replacements.put("kit.Name", applyColor(yamlConfiguration.getString("kits."+ argumnty[1] +".name")));
+                            sendList(sender, "messages.akit.set.done", replacements);
+                        } else {
+                            HashMap<String, String> replacements = new HashMap<>();
+                            String kits = null;
+                            for(String kit : configurationSection.getKeys(false)){
+                                if(kits == null){
+                                    kits = kit;
+                                } else {
+                                    kits = kits + yamlConfiguration.getString("messages.akit.subbers.kit-list.") + kit;
+                                }
+                            }
+                            replacements.put("list.kits", applyColor(kits));
+                            sendList(sender, "messages.akit.give.use", replacements);
                         }
                     } else {
-                        sender.sendMessage("§a§lAKit §8» §7Use: §a/akit give <kit> [player]");
-                        sender.sendMessage("§a* §7Kits: "+ ChatColor.of(Color.decode("#e3051b")) +"Christmas§7,"+ ChatColor.of(Color.decode("#bb00ff")) +" Mythic§7, "+ ChatColor.of(Color.decode("#cc5a18")) +"Classic§7, "+ ChatColor.of(Color.decode("#411fcc")) +"Gangster§7, "+ ChatColor.of(Color.decode("#ff8f9e")) +"Shulker§7, "+ ChatColor.of(Color.decode("#879dff")) +"Builder");
+                        sendMessage(sender, "messages.akit.errors.no-kits");
                     }
                 } else {
-                    sender.sendMessage("§8» » » »  §a§lKits - Help  §8« « « «");
-                    sender.sendMessage("§a/akit give <kit> [player] §8- §7Give kit to player");
-                    sender.sendMessage("§a/akit set <kit> §8- §7Set items in kit");
-                    sender.sendMessage("§8» » » »  §a§lKits - Help  §8« « « «");
+                    sendList(sender, "messages.akit.help");
                 }
             } else if(argumnty.length == 3) {
                 if (argumnty[0].equalsIgnoreCase("give")) {
                     KitsItems kity = new KitsItems();
-                    if(argumnty[1].equalsIgnoreCase("Christmas")){
-                        if(Bukkit.getPlayer(argumnty[2]) != null) {
-                            Bukkit.getPlayer(argumnty[2]).getInventory().addItem(kity.getChristmasHead());
-                            sender.sendMessage("§a§lKit §8» §7Dal si: " + ChatColor.of(Color.decode("#e3051b")) + "§lChristmas Kit §7Hráčovi: §a"+ argumnty[2]);
-                            Bukkit.getPlayer(argumnty[2]).sendMessage("§a§lKit §8» §7Dostal si: " + ChatColor.of(Color.decode("#e3051b")) + "§lChristmas Kit");
+                    File config = new File(Main.getInstance().getDataFolder() + "/config.yml");
+                    YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(config);
+                    ConfigurationSection configurationSection = yamlConfiguration.getConfigurationSection("kits");
+                    if(configurationSection != null) {
+                        if (configurationSection.getKeys(false).contains(argumnty[1])) {
+                            if(Bukkit.getPlayer(argumnty[2]) != null) {
+                                if(getEmptySlots(Bukkit.getPlayer(argumnty[2]).getInventory()) >= 1) {
+                                    HashMap<String, String> replacements = new HashMap<>();
+                                    replacements.put("kit.Name", applyColor(yamlConfiguration.getString("kits." + argumnty[1] + ".name")));
+                                    Bukkit.getPlayer(argumnty[2]).getInventory().addItem(kity.getKitHead(argumnty[1]));
+                                    sendList(sender, "messages.akit.give.receive-other", replacements);
+                                    sendList(Bukkit.getPlayer(argumnty[2]), "messages.akit.give.receive", replacements);
+                                } else {
+                                    sendMessage(sender, "messages.akit.errors.no-slot");
+                                }
+                            } else {
+                                sendList(sender, "messages.akit.errors.offline");
+                            }
                         } else {
-                            sender.sendMessage("§a§lKit §8» §7This user is offline!");
+                            HashMap<String, String> replacements = new HashMap<>();
+                            String kits = null;
+                            for(String kit : configurationSection.getKeys(false)){
+                                if(kits == null){
+                                    kits = kit;
+                                } else {
+                                    kits = kits + yamlConfiguration.getString("messages.akit.subbers.kit-list.") + kit;
+                                }
+                            }
+                            replacements.put("list.kits", applyColor(kits));
+                            sendList(sender, "messages.akit.give.use", replacements);
                         }
-                    } else if(argumnty[1].equalsIgnoreCase("Mythic")){
-                        if(Bukkit.getPlayer(argumnty[2]) != null) {
-                            Bukkit.getPlayer(argumnty[2]).getInventory().addItem(kity.getMythicHead());
-                            sender.sendMessage("§a§lKit §8» §7Dal si: " + ChatColor.of(Color.decode("#bb00ff")) + "§lMythic Kit §7Hráčovi: §a"+ argumnty[2]);
-                            Bukkit.getPlayer(argumnty[2]).sendMessage("§a§lKit §8» §7Dostal si: " + ChatColor.of(Color.decode("#bb00ff")) + "§lMythic Kit");
-                        } else {
-                            sender.sendMessage("§a§lKit §8» §7This user is offline!");
-                        }
-                    } else if(argumnty[1].equalsIgnoreCase("Classic")){
-                        if(Bukkit.getPlayer(argumnty[2]) != null) {
-                            Bukkit.getPlayer(argumnty[2]).getInventory().addItem(kity.getClassicHead());
-                            sender.sendMessage("§a§lKit §8» §7Dal si: "+ ChatColor.of(Color.decode("#cc5a18")) +"§lClassic Kit §7Hráčovi: §a"+ argumnty[2]);
-                            Bukkit.getPlayer(argumnty[2]).sendMessage("§a§lKit §8» §7Dostal si: "+ ChatColor.of(Color.decode("#cc5a18")) +"§lClassic Kit");
-                        } else {
-                            sender.sendMessage("§a§lKit §8» §7This user is offline!");
-                        }
-                    } else if(argumnty[1].equalsIgnoreCase("Gangster")){
-                        if(Bukkit.getPlayer(argumnty[2]) != null) {
-                            Bukkit.getPlayer(argumnty[2]).getInventory().addItem(kity.getGangsterHead());
-                            sender.sendMessage("§a§lKit §8» §7Dal si: "+ ChatColor.of(Color.decode("#411fcc")) +"§lGangster Kit §7Hráčovi: §a"+ argumnty[2]);
-                            Bukkit.getPlayer(argumnty[2]).sendMessage("§a§lKit §8» §7Dostal si: "+ ChatColor.of(Color.decode("#411fcc")) +"§lGangster Kit");
-                        } else {
-                            sender.sendMessage("§a§lKit §8» §7This user is offline!");
-                        }
-                    } else if(argumnty[1].equalsIgnoreCase("Shulker")){
-                        if(Bukkit.getPlayer(argumnty[2]) != null) {
-                            Bukkit.getPlayer(argumnty[2]).getInventory().addItem(kity.getShulkerHead());
-                            sender.sendMessage("§a§lKit §8» §7Dal si: "+ ChatColor.of(Color.decode("#ff8f9e")) +"§lShulker Kit §7Hráčovi: §a"+ argumnty[2]);
-                            Bukkit.getPlayer(argumnty[2]).sendMessage("§a§lKit §8» §7Dostal si: "+ ChatColor.of(Color.decode("#ff8f9e")) +"§lShulker Kit");
-                        } else {
-                            sender.sendMessage("§a§lKit §8» §7This user is offline!");
-                        }
-                    } else if(argumnty[1].equalsIgnoreCase("Builder")){
-                        if(Bukkit.getPlayer(argumnty[2]) != null) {
-                            Bukkit.getPlayer(argumnty[2]).getInventory().addItem(kity.getBuilderHead());
-                            sender.sendMessage("§a§lKit §8» §7Dal si: "+ ChatColor.of(Color.decode("#879dff")) +"§lBuilder Kit §7Hráčovi: §a"+ argumnty[2]);
-                            Bukkit.getPlayer(argumnty[2]).sendMessage("§a§lKit §8» §7Dostal si: "+ ChatColor.of(Color.decode("#879dff")) +"§lBuilder Kit");
-                        } else {
-                            sender.sendMessage("§a§lKit §8» §7This user is offline!");
-                        }
-                    }else {
-                        sender.sendMessage("§a§lAKit §8» §7Use: §a/akit give <kit> [player]");
-                        sender.sendMessage("§a* §7Kits: "+ ChatColor.of(Color.decode("#e3051b")) +"Christmas§7,"+ ChatColor.of(Color.decode("#bb00ff")) +" Mythic§7, "+ ChatColor.of(Color.decode("#cc5a18")) +"Classic§7, "+ ChatColor.of(Color.decode("#411fcc")) +"Gangster§7, "+ ChatColor.of(Color.decode("#ff8f9e")) +"Shulker§7, "+ ChatColor.of(Color.decode("#879dff")) +"Builder");
+                    } else {
+                        sendMessage(sender, "messages.akit.errors.no-kits");
                     }
                 } else {
-                    sender.sendMessage("§8» » » »  §a§lKits - Help  §8« « « «");
-                    sender.sendMessage("§a/akit give <kit> [player] §8- §7Give kit to player");
-                    sender.sendMessage("§a/akit set <kit> §8- §7Set items in kit");
-                    sender.sendMessage("§8» » » »  §a§lKits - Help  §8« « « «");
+                    sendList(sender, "messages.akit.help");
                 }
             } else {
-                    sender.sendMessage("§8» » » »  §a§lKits - Help  §8« « « «");
-                    sender.sendMessage("§a/akit give <kit> [player] §8- §7Give kit to player");
-                    sender.sendMessage("§a/akit set <kit> §8- §7Set items in kit");
-                    sender.sendMessage("§8» » » »  §a§lKits - Help  §8« « « «");
+                sendList(sender, "messages.akit.help");
             }
         } else {
-            sender.sendMessage("§cYou are not allowed");
+            sendMessage(sender, "messages.akit.errors.no-permission");
         }
         return false;
+    }
+
+    public int getEmptySlots(Inventory inventory) {
+        int i = 0;
+        for (ItemStack is : inventory.getContents()) {
+            if (is == null) {
+                i++;
+            }
+        }
+        return i;
+    }
+
+    public void sendList(CommandSender sender, String location, HashMap<String, String> replacements){
+        FileConfiguration config = Main.getInstance().getConfig();
+        replacements.put("prefixes.admin", config.getString("messages.akit.prefixes.admin"));
+        replacements.put("prefixes.default", config.getString("messages.akit.prefixes.default"));
+        for(String str : Main.getInstance().getConfig().getStringList(location)){
+            sendWithReplacement(sender, str, replacements);
+        }
+    }
+
+    public void sendList(CommandSender sender, String location){
+        HashMap<String, String> replacements = new HashMap<>();
+        FileConfiguration config = Main.getInstance().getConfig();
+        replacements.put("prefixes.admin", config.getString("messages.akit.prefixes.admin"));
+        replacements.put("prefixes.default", config.getString("messages.akit.prefixes.default"));
+        for(String str : Main.getInstance().getConfig().getStringList(location)){
+            sendWithReplacement(sender, str, replacements);
+        }
+    }
+
+    public void sendMessage(CommandSender sender, String location){
+        HashMap<String, String> replacements = new HashMap<>();
+        FileConfiguration config = Main.getInstance().getConfig();
+        replacements.put("prefixes.admin", config.getString("messages.akit.prefixes.admin"));
+        replacements.put("prefixes.default", config.getString("messages.akit.prefixes.default"));
+        sendWithReplacement(sender, Main.getInstance().getConfig().getString(location), replacements);
+    }
+
+    public void sendWithReplacement(CommandSender sender, String msg, HashMap<String, String> replacements){
+        String ehm = msg;
+        for(String replacement : replacements.keySet()){
+            ehm = ehm.replace("["+ replacement +"]", replacements.get(replacement));
+        }
+        ehm = applyColor(ehm);
+        sender.sendMessage(ehm);
+    }
+
+    private final Pattern hexPattern = Pattern.compile("<#([A-Fa-f0-9]){6}>");
+    public String applyColor(String message){
+        Matcher matcher = hexPattern.matcher(message);
+        while (matcher.find()) {
+            final ChatColor hexColor = ChatColor.of(matcher.group().substring(1, matcher.group().length() - 1));
+            final String before = message.substring(0, matcher.start());
+            final String after = message.substring(matcher.end());
+            message = before + hexColor + after;
+            matcher = hexPattern.matcher(message);
+        }
+        return ChatColor.translateAlternateColorCodes('&', message);
     }
 }
