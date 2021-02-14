@@ -3,6 +3,7 @@ package me.GGGEDR.Kity;
 import me.GGGEDR.Kity.Command.Admin.Admin;
 import me.GGGEDR.Kity.Command.Admin.TabComplete;
 import me.GGGEDR.Kity.Listeners.Click;
+import me.GGGEDR.Kity.Listeners.FirstJoin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin {
@@ -18,6 +19,7 @@ public final class Main extends JavaPlugin {
         this.getServer().getPluginCommand("akit").setExecutor(new Admin());
         this.getServer().getPluginCommand("akit").setTabCompleter(new TabComplete());
         this.getServer().getPluginManager().registerEvents(new Click(), this);
+        this.getServer().getPluginManager().registerEvents(new FirstJoin(), this);
     }
 
     @Override

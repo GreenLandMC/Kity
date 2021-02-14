@@ -66,7 +66,7 @@ public class Admin implements CommandExecutor {
                                 if(kits == null){
                                     kits = kit;
                                 } else {
-                                    kits = kits + yamlConfiguration.getString("messages.akit.subbers.kit-list.") + kit;
+                                    kits = kits + yamlConfiguration.getString("messages.akit.subbers.kit-list") + kit;
                                 }
                             }
                             replacements.put("list.kits", applyColor(kits));
